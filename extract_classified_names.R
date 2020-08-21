@@ -5,46 +5,40 @@ load.packages <- pacman::p_load(rbenchmark ,rgdal ,spdep ,ggplot2 ,leaflet ,sf ,
 load.packages
 setwd("B:/Classified")
 
-holding <- read.csv("Classified_NC_Traverses.csv", stringsAsFactors = FALSE)
+# read in the CSV of MUkeys
+holding <- read.csv("Classified_NC_Traverses_UniqueID_Mupolygonkeys.csv", stringsAsFactors = FALSE)
+#split.ID <- data.frame(paste0("W",holding$Watershed,"T",holding$TraverseGroup), stringsAsFactors = FALSE)
+#names(split.ID)<- "Split.ID"
 
-split.ID <- data.frame(paste0("W",holding$Watershed,"T",holding$TraverseGroup), stringsAsFactors = FALSE)
-names(split.ID)<- "Split.ID"
-
-
-tail(holding$Watershed)
-
+# tail(holding$Watershed)
 # head(holding)
-tail(holding)
-
-holding <- cbind(split.ID,holding)
+# tail(holding)
+# holding <- cbind(split.ID,holding)
 
 for(soil.class in c(14:16)){
-  soils <- holding[seq(4,nrow(holding),3),]
-  tail(soils)
   
+  # Drop the col of row numbers and rename the cols. 
+  soils <- holding[,-1]
+  names(soils) <- c("Split.ID",  "Classification" , paste0("MU",1:20))
+  
+  # query out one class of soil traverses
   soils <- soils[soils$Classification==soil.class,]
+  # NAs will come along, remove them
   soils <- soils[!is.na(soils$Split.ID),]
-  tail(soils)
   
+  #unneeded
+  # soils <- soils[,c(1,4,7:26)]
   
-  soils <- soils[,c(1,4,7:26)]
-  
+  # turn NAs into blanks! 
   soils[is.na(soils)]<-""
   
-  
   # This retreives the nationalmusym
-  matrix.of.holding <- matrix(nrow=nrow(soils),ncol=19)
+  matrix.of.holding <- matrix(nrow=nrow(soils),ncol=ncol(soils))
   Soil.split.ID <- soils[,1]
   soil.name.matrix <- cbind(Soil.split.ID,matrix.of.holding)
   
-  
-  
-  
   # Factor the nationalmusym
   unique.soilkeys <- levels(factor(unlist(soils[4:22])))
-  unique.soilkeys <- levels(factor(unlist(soils[4:22])))
-  
-  
   
   # MAKE CLUSTER FOR FOREACH
   cl <- makePSOCKcluster(8)
@@ -113,21 +107,3 @@ for(soil.class in c(14:16)){
   
 }
 
-############################### wir
-df.SDA.ammount==max(df.SDA.ammount)
-
-
-
-
-for(itter in 621:634){
-  natmusys <- paste(unique.soilkeys[itter])
-  a.string <- paste("nationalmusym=\'",natmusys,"\'",sep="")
-  tryCatch(get_component_from_SDA(WHERE = a.string), error=function(e){})
-}
-
-
-
-
-
-
-c(1,2,3,4)==max(c(1,2,3,4))

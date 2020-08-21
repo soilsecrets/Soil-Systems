@@ -7,7 +7,7 @@ library(maptools)
 # Load in the predictions vs the actual with the
 pred.data <- read.csv("id.predclass.csv", stringsAsFactors=FALSE)
 # Load in the traverses with MUpolygonkeys
-mupolygon_lookup <- read.csv("Classified_NC_Traverses_uniqueID_mupolykey.csv", stringsAsFactors=FALSE)
+mupolygon_lookup <- read.csv("Classified_NC_Traverses_UniqueID_Mupolygonkeys.csv", stringsAsFactors=FALSE)
 
 # use regex to split the watershed IDS to load watersheds in a bit. 
 watershed <- unlist(strsplit(pred.data$V1,"T\\d+"))
