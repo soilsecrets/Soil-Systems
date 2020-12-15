@@ -84,7 +84,36 @@ visNetwork(
 ) %>%
   visOptions( highlightNearest = T )
 
+
+
+
+
+
+
 # what about classifications?
+
+######################################################################
+# I might just split the code here so lets start this as a preamble 
+
+
+
+library(dplyr)
+library(arules)
+library(arulesSequences)
+library(arulesCBA)
+library(arulesViz)
+library(visNetwork)
+library(igraph)
+library(splitstackshape)
+
+setwd("B:/Named") 
+
+# load entire named catena dataset. 
+load(file="named.catenas")
+# Subset it into training data based on Daniels Class 
+df.named.catenas.subset <- stratified(df.named.catenas, group="Class", size=1000)
+
+
 
 # This was done before factorization of df.named.catenas.subset. otherwise run below
 # load(file="named.catenas")
@@ -93,9 +122,9 @@ visNetwork(
 df.subset <- df.named.catenas[,-2]
 # make classes a factor becuase they are the one var that isn't... 
 df.subset$Class <- as.factor(df.subset$Class)
-
 # Prepare transactions with this
 subset_trans <- prepareTransactions(Class~.,data=df.subset)
+
 # inspect(subset_trans) 
 #RCAR MIGHT WORK BETTER WITH A ELESTICNET/CV BUILT IN 
 classifier <- CBA(Class ~ ., data = df.named.catenas.subset, supp = 0.001,
@@ -227,3 +256,4 @@ all.catenas
 library(arulesSequences)
 
 
+ 

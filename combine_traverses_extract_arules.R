@@ -6,6 +6,7 @@ library(arulesViz)
 library(raster)
 library(visNetwork)
 library(igraph)
+library(arulesCBA)
 
 # set up a data frame for combining all of the traverses
 holding <- data.frame(matrix(ncol = 25))
@@ -36,6 +37,7 @@ holding <- read.csv("Classified_NC_Traverses.csv", stringsAsFactors = FALSE)
 split.ID <- data.frame(paste0("W",holding$Watershed,"T",holding$TraverseGroup), stringsAsFactors = FALSE)
 names(split.ID)<- "Split.ID"
 
+# This will make sure that the split IDs are unique for the entire state. This should return 3 for the three rows of data. 
 sum(split.ID=="W194T22")
 
 tail(holding$Watershed)
@@ -44,7 +46,6 @@ tail(holding$Watershed)
 tail(holding)
 
 holding <- cbind(split.ID,holding[,-1])
-
 
 soils <- holding[seq(2,nrow(holding),3),]
 
@@ -116,19 +117,15 @@ soils.rules <- apriori(tsoils, parameter = list(supp= .01, conf = 0.1, minlen=3)
 
 inspect(soils.rules[1:12])
 
-
-
-
 plot(soils.rules, method = "graph", engine='interactive')
 
 plot(soils.rules, method="graph")
 
 
-inspect
 
 ### Working on viz from https://bl.ocks.org/timelyportfolio/762aa11bb5def57dc27f
 
-ig <- plot(soils.rules,method="graph", control=list(type="items") )
+ ig <- plot(soils.rules,method="graph", control=list(type="items") )
 ig_df <- get.data.frame( ig, what = "both" )
 
 visNetwork(
@@ -190,3 +187,7 @@ a_list
 trans1 <- as(a_list, "transactions")
 
 inspect(trans1)
+
+
+
+yeet <- CBA(tsoils)
