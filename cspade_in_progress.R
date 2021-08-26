@@ -51,6 +51,12 @@ itemsets <- cspade(transaction_traverses,
                    parameter = list(support = 0.01, maxgap=1), 
                    control = list(verbose = FALSE))
 
+
+
+
+
+
+
 #inspect(itemsets)
 
 #Convert Back to DS
@@ -240,9 +246,9 @@ collapsed_history_graph_dt <- df_oh_traverses %>%
 collapsed_history_graph_dt[]
 
 
- %in% !collapsed_history_graph_dt$source
+# %in% !collapsed_history_graph_dt$source
 
-length()
+#length()
 
 
 collapsed_history_graph_dt$Elevation <- collapsed_history_graph_dt2$instances/collapsed_history_graph_dt$instances
@@ -258,7 +264,7 @@ for(row in 1:nrow(collapsed_history_graph_dt)){
 
 
 
-g <- collapsed_history_graph_dt %>% filter(instances > (min(tail(sort(instances), 21))))
+g <- collapsed_history_graph_dt %>% filter(instances > (min(tail(sort(instances), 31))))
 
 
 
@@ -279,7 +285,10 @@ group_tags <- cut(g$Elevation,
 
 
 
-g$group <- as.numeric(group_tags)
+g$group <- as.numeric(group_tags) 
+g[is.na(g$group),]
+
+
 
 gl <- g %>%
   group_by(group, source) %>%
@@ -365,8 +374,8 @@ par(mfrow=c(1,1))
 plot(c(1, length(soil.comp.names)+1), c(min(elevations)-600, max(elevations)+350),
      xaxs="i", xaxt = "n", yaxt = "n", xlab='Components/Elevation', ylab= "", 
      main= "Generalized Soil Traverse for Class 10", bg="black")+ 
-  axis(1, at=1:length(soil.comp.names), labels=soil.comp.names )+
-  axis(1, at=1:length(soil.comp.names)+0.5, labels=paste0(round(elevations,0),"M"))+
+  #axis(1, at=1:length(soil.comp.names), labels=soil.comp.names )+
+  axis(1, at=1:length(soil.comp.names)+0.5, labels=paste0(round(elevations,0)," m"))+
   # Create a background that is soil colored. 
   rect(0,min(elevations)-600,length(elevations)+1,max(elevations)+400,col="sienna3") +
   
@@ -434,12 +443,12 @@ lookup[!duplicated(lookup[,1]),2]
 # plot piechart 
 for(itter in 1:length(unique(gbb$group))){
   colors.to.use <-  pie.colors[as.numeric(lookup[match(str_extract(unlist(gbb[gbb$group==itter,2]),"[^\"{}]+") , lookup[,3]),1])]
-    add.pie(unlist(gbb[gbb$group==itter,3]), labels = paste0(str_extract(unlist(gbb[gbb$group==itter,2]),"[^\"{}]+"), "=", round(unlist(gbb[gbb$group==itter,3])/sum(unlist(gbb[gbb$group==itter,3])),2)*100,"%"), x=(1*itter)+.5, y=elevations[itter]-400, col = colors.to.use, radius = 150)
+    add.pie(unlist(gbb[gbb$group==itter,3]), labels = paste0(str_extract(unlist(gbb[gbb$group==itter,2]),"[^\"{}]+"), "=", round(unlist(gbb[gbb$group==itter,3])/sum(unlist(gbb[gbb$group==itter,3])),2)*100,"%"), x=(1*itter)+.5, y=elevations[itter]-500, col = colors.to.use, radius = 95)
 }
 
 
 # add a ledgend 
-legend(x=length(soil.comp.names)-.25, y=min(elevations)*-2, lookup[!duplicated(lookup[,1]),2], fill = pie.colors[as.numeric(lookup[!duplicated(lookup[,1]),1])], cex=.75, bty = "n")
+legend(x=length(soil.comp.names)-.705, y=min(elevations)-100, lookup[!duplicated(lookup[,1]),2], fill = pie.colors[as.numeric(lookup[!duplicated(lookup[,1]),1])], cex=.95, bty = "n", ncol=1)
 
 #}
 
@@ -460,7 +469,7 @@ legend(x=length(soil.comp.names)-.25, y=min(elevations)*-2, lookup[!duplicated(l
 collapsed_history_graph_dt
 unboringed_collapsed_history_graph_dt <- collapsed_history_graph_dt[!collapsed_history_graph_dt$source==collapsed_history_graph_dt$destination,]
 
-filter_limit <- 40
+filter_limit <- 21
 scale.mid <- unboringed_collapsed_history_graph_dt %>% filter(instances > head(tail(sort(instances),filter_limit),1))
 
 #####################
@@ -516,7 +525,7 @@ ggraph(g, layout = 'fr') +
   labs(title = paste("Soil Rules for class", Daniels.class), caption = paste("Top", filter_limit , "soil relationships")) + 
   #scale_fill_viridis_d(guide = F) + 
   #scale_edge_alpha_identity(guide= F) + 
-  scale_edge_colour_gradient2(limits=c(min(scale.mid$confidence),max(scale.mid$confidence)+.01), high = "red", mid =  "grey", midpoint = mean(scale.mid$confidence), low = "black")+
+  scale_edge_colour_gradient2(limits=c(min(scale.mid$confidence),max(scale.mid$confidence)+.03), high = "red", mid =  "grey", midpoint = mean(scale.mid$confidence), low = "black")+
   theme_graph() +
   theme(legend.position = "bottom")
 
@@ -531,3 +540,4 @@ plot.new()
 op <- par(cex = 1.0)
 
 c(, max(elevations)+350
+  

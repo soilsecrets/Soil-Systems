@@ -29,7 +29,7 @@ for(class in sort(unique(traverses$Class))){
   
 Daniels.class <- class
 itemsets <- cspade(transaction_traverses[transaction_traverses@itemsetInfo$Class==Daniels.class], 
-                   parameter = list(support = 0.004), 
+                   parameter = list(support = 0.004, maxlen=2), 
                    control = list(verbose = FALSE))
 
 rules <- ruleInduction(itemsets, 
@@ -39,8 +39,8 @@ rules_cleaned <- rules[!is.redundant(rules)]
 rules.list[[class]] <- rules_cleaned
 }
 
-save(rules.list, file = "Daniels_class_rules_list_004support_01conf")
-
+save(rules.list, file = "Daniels_class_rules_list_004support_01conf_length2")
+#load("Daniels_class_rules_list_004support_01conf")
 
 rules_df <- lapply(rules.list, function(x) as(x,"data.frame"))
 
@@ -143,6 +143,7 @@ for(class in sort(unique(traverses2$mlra_class))){
                          confidence = 0.01, 
                          control = list(verbose = FALSE))
   rules_cleaned <- rules[!is.redundant(rules)]
+ 
   rules.list.clusters[[class]] <- rules_cleaned
 }
 

@@ -3,10 +3,11 @@
 
 setwd("B:/modelNC")
 
+
 traverses <- read.csv("B:/Classified/df_catena_comp_percent_w_elevations.csv")
 head(oh_traverses)
 
-sixteentraverses <- traverses[traverses$Class==1,]
+sixteentraverses <- traverses[traverses$Class==16,]
 
 sixteentraverses <- sixteentraverses[order(sixteentraverses$Catena_ID, sixteentraverses$Component),]
 
@@ -37,7 +38,7 @@ head(inspect(transaction_traverses))
 
 
 itemsets <- cspade(transaction_traverses, 
-                   parameter = list(support = 0.2), 
+                   parameter = list(maxsize=1, maxlen=2, support = 0.001), 
                    control = list(verbose = FALSE))
 
 inspect(itemsets)
@@ -68,9 +69,9 @@ itemsets_df %>%
     
 
 rules <- ruleInduction(itemsets, 
-                       confidence = 0.2, 
+                       confidence = 0.01, 
                        control = list(verbose = FALSE))
-inspect(head(rules, 20))                 
+inspect(head(rules, 200))                 
 
 rules_cleaned <- rules[!is.redundant(rules)]
 
