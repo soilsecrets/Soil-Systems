@@ -10,7 +10,7 @@ traverses2 <- traverses_cluster_classes[!is.na(traverses_cluster_classes$mlra_cl
 
 
 
-Daniels.class <- 10
+Daniels.class <- 16
 sixteentraverses <- traverses2[traverses2$Class==Daniels.class,]
 
 sixteentraverses <- sixteentraverses[order(sixteentraverses$Catena_ID, sixteentraverses$Component),]

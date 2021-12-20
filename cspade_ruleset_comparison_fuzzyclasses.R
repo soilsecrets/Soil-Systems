@@ -1,21 +1,23 @@
+# this is the same as the other ruleset comparisons, but I just have to edit it to run off of fuzzy_traverses.csv
+
 library(arulesSequences)
 library(pheatmap)
 library(RColorBrewer)
 
 setwd("B:/modelNC")
 
-traverses <- read.csv("B:/Classified/df_catena_comp_percent_w_elevations.csv")
+traverses <- read.csv("fuzzy_traverses.csv")
 
 
 rules.list <- list()
 #sixteentraverses <- traverses[traverses$Class==Daniels.class,]
 
-for(class in sort(unique(traverses$Class))){
+for(class in sort(unique(traverses$mlra_class))){
 
 Daniels.class <- class
 
 sixteentraverses <- traverses[order(traverses$Catena_ID, traverses$Component),]
-sixteentraverses <- sixteentraverses[sixteentraverses$Class==Daniels.class,]
+sixteentraverses <- sixteentraverses[sixteentraverses$mlra_class==Daniels.class,]
 
 oh_traverses <- sixteentraverses[,-c(1:6)]
 oh_traverses <- t(apply(oh_traverses, MARGIN = 1, FUN= function(x) x==max(x)))
@@ -26,7 +28,7 @@ transaction_traverses <-  as(data.frame(oh_traverses), "transactions")
 transactionInfo(transaction_traverses)$sequenceID <- sixteentraverses$Catena_ID
 transactionInfo(transaction_traverses)$eventID <- sixteentraverses$Component
 transactionInfo(transaction_traverses)$Elevation <- sixteentraverses$Elevation
-transactionInfo(transaction_traverses)$Class <- sixteentraverses$Class
+transactionInfo(transaction_traverses)$Class <- sixteentraverses$mlra_class
 
 
 
@@ -42,10 +44,26 @@ rules_cleaned <- rules[!is.redundant(rules)]
 rules.list[[class]] <- rules_cleaned
 }
 
-save(rules.list, file = "Daniels_class_rules_list_004support_01conf_length2")
-#load("Daniels_class_rules_list_004support_01conf")
+save(rules.list, file = "Fuzzy_class_rules_list_004support_01conf_length2")
 
-rules_df <- lapply(rules.list, function(x) as(x,"data.frame"))
+rules.list.fuzzy <- rules.list
+
+load("Daniels_class_rules_list_004support_01conf")
+
+for(i in 1:16){
+rules.list.fuzzy[[i]] <- rules.list[[i]]
+}
+
+
+
+rules.list.fuzzy[sapply(rules.list.fuzzy,is.null)] <- list(ruleInduction(itemsets[1], 
+                                                                    confidence = 1, 
+                                                                    control = list(verbose = FALSE)))
+
+rules_df <- lapply(rules.list.fuzzy, function(x) as(x,"data.frame"))
+
+#save(rules_df, file="daniels_and_cluster")
+
 
 # number of rules for each class in order 
 #unlist(lapply(rules.list, length))

@@ -38,7 +38,7 @@ head(inspect(transaction_traverses))
 
 
 itemsets <- cspade(transaction_traverses, 
-                   parameter = list(maxsize=1, maxlen=2, support = 0.001), 
+                   parameter = list(maxsize=1, maxlen=2, support =  1/nrow(transaction_traverses)), 
                    control = list(verbose = FALSE))
 
 inspect(itemsets)
@@ -69,8 +69,9 @@ itemsets_df %>%
     
 
 rules <- ruleInduction(itemsets, 
-                       confidence = 0.01, 
+                       confidence = 0.001, 
                        control = list(verbose = FALSE))
+
 inspect(head(rules, 200))                 
 
 rules_cleaned <- rules[!is.redundant(rules)]
@@ -93,7 +94,7 @@ rules_df %>%
   #Remove All Rules that Rock.outcrop
   filter(!str_detect(rule, '\\{Rock.outcrop\\/\\}')) %>% 
   #Keep only Rule, Confidence, and Lift - 1
-  transmute(rule, confidence, lift = lift - 1) %>% 
+  transmute(rule, confidence, lift = lift-1) %>% 
   #Pivot Lift and confidence into a single column
   pivot_longer(cols = c('confidence','lift'),
                names_to = "metric", 
